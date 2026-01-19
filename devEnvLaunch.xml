@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <!-- What you want to see in the UI when selected -->
+  <description>Sillable Division Project for Girlfriend</description>
+  <workspace>storyEnv.code-workspace</workspace>
+  <open>
+    <vscode/>
+    <terminal/>
+  </open>
+  <wait>
+    <docker build="true"/>
+  </wait>
+</project>
