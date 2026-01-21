@@ -1,25 +1,47 @@
 services:
+  db:
+    image: postgres:15
+    container_name: ${COMPOSE_PROJECT_NAME}-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_INTERNAL_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h 127.0.0.1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   backend:
     build: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - .env
+    container_name: ${COMPOSE_PROJECT_NAME}-backend
+    command: python manage.py runserver 0.0.0.0:${DJANGO_INTERNAL_PORT}
     volumes:
       - ./backend:/backend
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT}:${DJANGO_INTERNAL_PORT}"
     depends_on:
-      - db
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - DB_HOST=db
-      - DB_PORT=5432
+      db:
+        condition: service_healthy
 
-  db:
-    image: postgres:15
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ${COMPOSE_PROJECT_NAME}-frontend
+    env_file:
+      - ./frontend/.env
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      BACKEND_INTERNAL_URL: http://backend:${DJANGO_INTERNAL_PORT}
     ports:
-      - "5432:5432"
+      - "${FRONTEND_PORT}:${VITE_INTERNAL_PORT}"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    command: npm run dev -- --host --port ${VITE_INTERNAL_PORT}
+  
