@@ -22,7 +22,6 @@ class WordsToAdd(models.Model):
             models.Index(fields=['-frequency'], name='ix_words_to_add_freq_desc')
         ]
 
-
     def __str__(self):
         return self.word
     
@@ -40,7 +39,6 @@ class Dictionary(models.Model):
             models.Index(Lower('word'), name='ix_dictionary_word_lower'),  # optional but recommended
         ]
 
-
     def __str__(self):
         return self.word
 
@@ -55,21 +53,21 @@ class Stories(models.Model):
 class Chapters(models.Model):
     title = models.CharField(max_length=200)
     story = models.ForeignKey(Stories, on_delete=models.CASCADE)
-    chapter_order = models.PositiveIntegerField()
+    order = models.PositiveIntegerField()
     dictionary_completed = models.BooleanField(default=False)
     
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['story', 'chapter_order'], name='uq_story_chapter_order')
+            models.UniqueConstraint(fields=['story', 'order'], name='uq_story_order')
         ]
-        ordering = ('story', 'chapter_order')
+        ordering = ('story', 'order')
         indexes = [
-            models.Index(fields=['story', 'chapter_order']),
+            models.Index(fields=['story', 'order']),
         ]
 
 
     def __str__(self):
-        return str(self.chapter_order) + ": " + self.title
+        return str(self.order) + ": " + self.title
 
 
 class Paragraphs(models.Model):
