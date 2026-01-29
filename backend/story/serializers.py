@@ -1,18 +1,17 @@
 from rest_framework import serializers #type: ignore
-from .models import Stories, Chapters
+from .models import Stories, Chapters, WordsToAdd
 from .services.reformatting_text import(
     split_paragraphs as service_split_paragraphs,
     sanitize_text as service_sanitize_text
 )
-from .services.chapter_add import (
-    create_chapter_atomic as service_create_chapter_atomic,
-    create_words_statistsics as service_create_words_statistics  
-)
+from .services.chapter_add import create_words_statistsics as service_create_words_statistics  
+from .services.database import create_chapter_atomic as service_create_chapter_atomic
 
 class StoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stories
         fields = ["id", "title", "description"]
+
 
 class ChapterListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,3 +71,9 @@ class ChapterAddSerializer(serializers.Serializer):
             words_to_add=words_to_add,
             chapter_word_set=chapter_word_set,
         )
+
+
+class WordsToAddViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WordsToAdd
+        fields = ["id", "word", "frequency"]

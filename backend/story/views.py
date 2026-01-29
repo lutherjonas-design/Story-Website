@@ -1,8 +1,8 @@
 from rest_framework.generics import ListAPIView, CreateAPIView #type: ignore
 from rest_framework.views import APIView #type: ignore
 from rest_framework.response import Response #type: ignore
-from .models import Stories, Chapters, Paragraphs, UniqueWordsInParagraphs, Dictionary
-from .serializers import StoriesSerializer,ChapterListSerializer,ChapterAddSerializer, ShowChapterSerializer
+from .models import Stories, Chapters, Paragraphs, UniqueWordsInParagraphs, Dictionary, WordsToAdd
+from .serializers import StoriesSerializer,ChapterListSerializer,ChapterAddSerializer, ShowChapterSerializer, WordsToAddViewSerializer
 from .services.reformatting_text import (
     reformat_text_output as service_reformat_output,
     get_words as service_get_words
@@ -17,8 +17,7 @@ class ChaptersListView(ListAPIView):
 
     def get_queryset(self):
         story_id = self.kwargs['story_id']
-        return Chapters.objects.filter(story_id=story_id).order_by("chapter_order")
-
+        return Chapters.objects.filter(story_id=story_id).order_by("order")
 
 class ShowChapterView(APIView):
     serializer_class = ShowChapterSerializer
@@ -51,7 +50,6 @@ class ShowChapterView(APIView):
         }
         return Response(ShowChapterSerializer(payload).data)
 
-
 class ChapterAddView(CreateAPIView):
     serializer_class = ChapterAddSerializer
 
@@ -59,3 +57,14 @@ class ChapterAddView(CreateAPIView):
         ctx = super().get_serializer_context()
         ctx["story_id"] = self.kwargs["story_id"]  # inject the URL parameter
         return ctx
+    
+class WordsToAddView(ListAPIView):
+    serializer_class = WordsToAddViewSerializer
+
+    def get_queryset(self):
+        params = self.request.query_params
+        if 'limit' in params:
+            if params['limit'].isdigit():
+                limit = int(params['limit'])
+                return WordsToAdd.objects.all().order_by("-frequency")[:limit].values_list()
+        return WordsToAdd.objects.all().order_by("-frequency")[:10].values_list()

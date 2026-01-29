@@ -11,7 +11,7 @@ from django.db.models.functions import Lower
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 class WordsToAdd(models.Model):
-    word = models.TextField(max_length=100)
+    word = models.CharField(max_length=100)
     frequency = models.PositiveIntegerField(default=1)
 
     class Meta:
@@ -27,7 +27,7 @@ class WordsToAdd(models.Model):
     
 
 class Dictionary(models.Model):
-    word = models.TextField(max_length=100)
+    word = models.CharField(max_length=100)
     syllable_breaks = ArrayField(models.PositiveIntegerField(), default=list)
 
     class Meta:
