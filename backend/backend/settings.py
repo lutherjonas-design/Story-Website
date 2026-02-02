@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # created apps
     'rest_framework',
     'story',
+    'dictionary',
 ]
 
 MIDDLEWARE = [

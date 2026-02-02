@@ -1,9 +1,12 @@
 from rest_framework.generics import ListAPIView, CreateAPIView #type: ignore
 from rest_framework.views import APIView #type: ignore
 from rest_framework.response import Response #type: ignore
-from .models import Stories, Chapters, Paragraphs, UniqueWordsInParagraphs, Dictionary, WordsToAdd
+from .models import Stories, Chapters, Paragraphs, UniqueWordsInParagraphs
+
+from dictionary.models import Dictionary, WordsToAdd
+
 from .serializers import StoriesSerializer,ChapterListSerializer,ChapterAddSerializer, ShowChapterSerializer, WordsToAddViewSerializer
-from .services.reformatting_text import (
+from .helper.reformatting_text import (
     reformat_text_output as service_reformat_output,
     get_words as service_get_words
 )
@@ -57,14 +60,18 @@ class ChapterAddView(CreateAPIView):
         ctx = super().get_serializer_context()
         ctx["story_id"] = self.kwargs["story_id"]  # inject the URL parameter
         return ctx
-    
+
+class CanditatesToDictionaryView():
+    pass
+
 class WordsToAddView(ListAPIView):
     serializer_class = WordsToAddViewSerializer
+    pagination_class = None
 
     def get_queryset(self):
         params = self.request.query_params
         if 'limit' in params:
             if params['limit'].isdigit():
                 limit = int(params['limit'])
-                return WordsToAdd.objects.all().order_by("-frequency")[:limit].values_list()
-        return WordsToAdd.objects.all().order_by("-frequency")[:10].values_list()
+                return WordsToAdd.objects.all().order_by("-frequency")[:limit]
+        return WordsToAdd.objects.all().order_by("-frequency")[:10]

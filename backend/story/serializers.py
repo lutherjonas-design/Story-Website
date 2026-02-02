@@ -1,11 +1,14 @@
 from rest_framework import serializers #type: ignore
-from .models import Stories, Chapters, WordsToAdd
-from .services.reformatting_text import(
+from .models import Stories, Chapters
+
+from dictionary.models import Dictionary, WordsToAdd
+
+from .helper.reformatting_text import(
     split_paragraphs as service_split_paragraphs,
     sanitize_text as service_sanitize_text
 )
-from .services.chapter_add import create_words_statistsics as service_create_words_statistics  
-from .services.database import create_chapter_atomic as service_create_chapter_atomic
+from .helper.chapter_add import create_words_statistsics as service_create_words_statistics  
+from .helper.database import create_chapter_atomic as service_create_chapter_atomic
 
 class StoriesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -71,6 +74,19 @@ class ChapterAddSerializer(serializers.Serializer):
             words_to_add=words_to_add,
             chapter_word_set=chapter_word_set,
         )
+
+
+class CanditatesToDictionarySerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    #syllables = serializers.ArrayField()
+    def validate(self, data):
+        word_id = data["id"]
+        try:
+            word = WordsToAdd.objects.get(id=word_id).only("word").first()
+        except WordsToAdd.DoesNotExist:
+            raise serializers.ValidationError("Word not in WordsToAdd")
+        data["word"] = word
+    pass
 
 
 class WordsToAddViewSerializer(serializers.ModelSerializer):

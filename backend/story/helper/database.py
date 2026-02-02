@@ -1,4 +1,7 @@
-from ..models import Chapters, Paragraphs,Dictionary, UniqueWordsInParagraphs, WordsToAdd
+from ..models import Chapters, Paragraphs, UniqueWordsInParagraphs
+
+from dictionary.models import Dictionary, WordsToAdd
+
 # Creates a chapter with the next number and its paragraphs atomically.
 # Assumes story and paragraph_list are already validated.
 def create_chapter_atomic(*, story, title, paragraph_list, words_to_add, chapter_word_set) -> Chapters:
@@ -87,3 +90,14 @@ def create_chapter_atomic(*, story, title, paragraph_list, words_to_add, chapter
                 )
 
     return chapter
+
+def transferWord(*,id,word,syllables):
+    from django.db import transaction
+    from ..models import WordsToAdd, Dictionary
+    with transaction.atomic():
+        breaks = syllables
+        Dictionary.objects.create(
+            word = word,
+            syllable_breaks = breaks
+        )
+    pass

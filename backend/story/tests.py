@@ -1,9 +1,16 @@
 from django.test import SimpleTestCase
 
-from .services.chapter_add import create_words_statistsics, get_words
+from .helper.chapter_add import create_words_statistsics, get_words
+class ListToBreaksTests(SimpleTestCase):
+    maxDiff = None
+    def test_basic(self):
+        content = ["ren","nen"]
+        expected = [3]
+        
+    pass
+
 class ServicesChapterAddTests(SimpleTestCase):
     maxDiff = None
-
     def test_get_words_basic(self):
         content = "Hello, world! This is a test."
         expected = ["hello", "world", "this", "is", "a", "test"]
