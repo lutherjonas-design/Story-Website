@@ -2,3 +2,7 @@ Django==5.2.8
 python-dotenv==1.2.1
 psycopg2-binary==2.9.11
 djangorestframework==3.14.0
+pytest==9.0.2
+pytest-django==4.11.1
+pytest-cov==7.0.0
+model-bakery==1.23.2

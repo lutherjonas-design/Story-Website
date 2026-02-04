@@ -1,13 +1,12 @@
 from ..models import Chapters, Paragraphs, UniqueWordsInParagraphs
 
-from dictionary.models import Dictionary, WordsToAdd
-
 # Creates a chapter with the next number and its paragraphs atomically.
 # Assumes story and paragraph_list are already validated.
 def create_chapter_atomic(*, story, title, paragraph_list, words_to_add, chapter_word_set) -> Chapters:
     from django.db import transaction
-    from django.db.models import Max,F, Case, When, Value, IntegerField
+    from django.db.models import Max
     from .chapter_add import title_words_statistics
+    from dictionary.services import add_words_dict_frequency as dict_add_word
 
     with transaction.atomic():
         last_num = (
@@ -53,51 +52,5 @@ def create_chapter_atomic(*, story, title, paragraph_list, words_to_add, chapter
         for words in title_words_statistics(title=title):
             words_to_add[words] = words_to_add.get(words, 0) + 1
 
-        if words_to_add:
-            existing_words = set(
-                Dictionary.objects
-                .filter(word__in=words_to_add.keys())
-                .values_list("word", flat=True)
-            )
-            words_that_need_syllables = {
-                word: freq
-                for word, freq in words_to_add.items()
-                if word not in existing_words
-            }
-            existing = set(
-                WordsToAdd.objects.filter(word__in=words_that_need_syllables.keys()).values_list('word', flat=True)
-            )
-            to_update = {
-                word: freq
-                for word, freq in words_that_need_syllables.items()
-                if word in existing
-            }
-            if to_update:           
-                whens = [When(word=w, then=Value(freq)) for w, freq in to_update.items()]
-                WordsToAdd.objects.filter(word__in=to_update.keys()).update(
-                    frequency=F('frequency') + Case(*whens, default=Value(0), output_field=IntegerField())
-                )
-
-            to_create = {
-                word: freq
-                for word, freq in words_that_need_syllables.items()
-                if word not in existing
-            }
-            if to_create:
-                WordsToAdd.objects.bulk_create(
-                    (WordsToAdd(word=word, frequency=freq) for word, freq in to_create.items()),
-                    ignore_conflicts=True
-                )
-
+        dict_add_word(words_to_add=words_to_add)
     return chapter
-
-def transferWord(*,id,word,syllables):
-    from django.db import transaction
-    from ..models import WordsToAdd, Dictionary
-    with transaction.atomic():
-        breaks = syllables
-        Dictionary.objects.create(
-            word = word,
-            syllable_breaks = breaks
-        )
-    pass

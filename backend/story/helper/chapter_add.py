@@ -1,12 +1,5 @@
 from typing import Tuple, Dict, Set
 
-def check_dictionary_entries(*, word_list: list[str]) -> set[str]:
-    from ..models import Dictionary
-    # Returns the set of words not already in the dictionary.
-    if not word_list:
-        return set()
-    return set(word for word in word_list if word.lower() not in Dictionary.objects.filter(word=word))
-
 def create_words_statistsics(*, paragraph_list: list[str]) -> Tuple[Dict[str, int], list[Set[str]]]:
     from .reformatting_text import get_words as service_get_words
     all_words = {}

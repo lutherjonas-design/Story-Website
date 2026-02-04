@@ -19,7 +19,7 @@ services:
     env_file:
       - .env
     container_name: ${COMPOSE_PROJECT_NAME}-backend
-    command: python manage.py runserver 0.0.0.0:${DJANGO_INTERNAL_PORT}
+    #command: python manage.py runserver 0.0.0.0:${DJANGO_INTERNAL_PORT}
     volumes:
       - ./backend:/backend
     ports:
