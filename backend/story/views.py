@@ -1,6 +1,7 @@
 from rest_framework.generics import ListAPIView, CreateAPIView #type: ignore
 from rest_framework.views import APIView #type: ignore
 from rest_framework.response import Response #type: ignore
+from django.shortcuts import get_object_or_404
 from .models import Stories, Chapters, Paragraphs, UniqueWordsInParagraphs
 
 from .serializers import StorySerializer,ChapterListSerializer,ChapterAddSerializer, ShowChapterSerializer
@@ -14,12 +15,18 @@ class StoriesListView(ListAPIView):
     queryset = Stories.objects.all().order_by("id")
     serializer_class = StorySerializer
 
+
 class ChaptersListView(ListAPIView):
     serializer_class = ChapterListSerializer
-
+    pagination_class = None
     def get_queryset(self):
         story_id = self.kwargs['story_id']
-        return Chapters.objects.filter(story_id=story_id).order_by("order")
+        # 404 if parent story doesn't exist:
+        story = get_object_or_404(Stories, id=story_id)
+        # Return a queryset (could be empty if no chapters yet)
+        return Chapters.objects.filter(story=story).order_by("order")
+
+    
 
 class ShowChapterView(APIView):
     serializer_class = ShowChapterSerializer
