@@ -2,7 +2,7 @@
 # story/tests/conftest.py
 import pytest #type:ignore
 from rest_framework.test import APIClient #type:ignore
-from story.models import Stories, Chapters
+from story.models import Story, Chapter
 
 @pytest.fixture
 def api_client():
@@ -15,7 +15,7 @@ def make_story():
     Usage: s = make_story(title="A", description="B")
     """
     def _make_story(title="Story", description="Desc"):
-        return Stories.objects.create(title=title, description=description)
+        return Story.objects.create(title=title, description=description)
     return _make_story
 
 @pytest.fixture
@@ -27,8 +27,8 @@ def make_chapter():
     """
     def _make_chapter(*, story=None, title="Chapter", order=1, dictionary_completed=False):
         if story is None:
-            story = Stories.objects.create(title="Auto Story", description="Auto")
-        return Chapters.objects.create(
+            story = Story.objects.create(title="Auto Story", description="Auto")
+        return Chapter.objects.create(
             story=story,
             title=title,
             order=order,

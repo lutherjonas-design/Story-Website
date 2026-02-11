@@ -2,7 +2,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView #type: ignore
 from rest_framework.views import APIView #type: ignore
 from rest_framework.response import Response #type: ignore
 from django.shortcuts import get_object_or_404
-from .models import Stories, Chapters, Paragraphs, UniqueWordsInParagraphs
+from .models import Story, Chapter, Paragraph, UniqueWordsInParagraph
 
 from .serializers import StorySerializer,ChapterListSerializer,ChapterAddSerializer, ShowChapterSerializer
 from .helper.reformatting_text import (
@@ -12,7 +12,7 @@ from .helper.reformatting_text import (
 
 class StoriesListView(ListAPIView):
     pagination_class = None
-    queryset = Stories.objects.all().order_by("id")
+    queryset = Story.objects.all().order_by("id")
     serializer_class = StorySerializer
 
 
@@ -22,17 +22,16 @@ class ChaptersListView(ListAPIView):
     def get_queryset(self):
         story_id = self.kwargs['story_id']
         # 404 if parent story doesn't exist:
-        story = get_object_or_404(Stories, id=story_id)
+        story = get_object_or_404(Story, id=story_id)
         # Return a queryset (could be empty if no chapters yet)
-        return Chapters.objects.filter(story=story).order_by("order")
+        return Chapter.objects.filter(story=story).order_by("order")
 
-    
 
 class ShowChapterView(APIView):
     serializer_class = ShowChapterSerializer
     def get(self,rquest,story_id:int,chapter_order:int,*args,**kwargs):
         from dictionary.services import get_word_breaks as dict_word_breaks
-        chapter = Chapters.objects.filter(story_id=story_id, order=chapter_order).only("id", "title", "story_id").first()
+        chapter = Chapter.objects.filter(story_id=story_id, order=chapter_order).only("id", "title", "story_id").first()
         print(chapter)
         if not chapter:
             payload = {
@@ -44,10 +43,10 @@ class ShowChapterView(APIView):
             return Response(ShowChapterSerializer(payload).data)
         unique_words_title = service_get_words(chapter.title)
         #paragraphs = chapter.paragraphs_set.all().order_by("number").only("id", "number", "content")
-        db_paragraphs = Paragraphs.objects.filter(chapter_id=chapter.id).only("id", "number", "content").order_by("number")
+        db_paragraphs = Paragraph.objects.filter(chapter_id=chapter.id).only("id", "number", "content").order_by("number")
         paragraph_formatted = [{"id":id,"n":n,"t":service_reformat_output(p)} for id,n,p in db_paragraphs.values_list("id","number","content")]
         paragraph_ids = db_paragraphs.values_list("id", flat=True)
-        unique_paragraph_words = set(UniqueWordsInParagraphs.objects.filter(paragraph_id__in=paragraph_ids).values_list("word", flat=True).distinct())
+        unique_paragraph_words = set(UniqueWordsInParagraph.objects.filter(paragraph_id__in=paragraph_ids).values_list("word", flat=True).distinct())
         unique_words = unique_paragraph_words | set(unique_words_title)
         dictionary_words = dict_word_breaks(word_list=unique_words)
         payload = { # still need to add the words of tittle to the dictionary querryset
@@ -57,6 +56,7 @@ class ShowChapterView(APIView):
             "dictionary": dictionary_words,
         }
         return Response(ShowChapterSerializer(payload).data)
+
 
 class ChapterAddView(CreateAPIView):
     serializer_class = ChapterAddSerializer

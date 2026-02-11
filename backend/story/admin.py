@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Stories, Chapters, Paragraphs
+from .models import Story, Chapter, Paragraph
 
-admin.site.register(Paragraphs)
-admin.site.register(Stories)
-admin.site.register(Chapters)
+admin.site.register(Paragraph)
+admin.site.register(Story)
+admin.site.register(Chapter)

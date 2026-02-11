@@ -1,0 +1,148 @@
+/* Sharp angles: smaller radius */
+:root {
+  --card-bg: #0f2d3a;
+  --card-bg-hover: #113243;
+  --card-text: #e6f2f7;
+  --card-subtle: #b7ccd6;
+  --card-border: #0a1f29;
+  --card-radius: 2px;          /* <= tightened per request */
+  --card-height: 180px;
+  --card-padding: 16px;
+  --media-width: 44%;
+  --elev-1: 0 4px 14px rgba(0,0,0,0.22);
+  --elev-2: 0 10px 28px rgba(0,0,0,0.35);
+  --focus: 0 0 0 3px rgba(23,100,132,0.55);
+}
+
+/* Layout: text on left, image on right with diagonal split */
+.story-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr var(--media-width);
+  height: var(--card-height);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  background: var(--card-bg);
+  color: var(--card-text);
+  overflow: hidden;
+  box-shadow: var(--elev-1);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 200ms ease;
+  will-change: transform;
+  isolation: isolate;
+}
+
+/* Full-card clickable area */
+.story-card__link {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+}
+
+/* Hover / focus scale */
+.story-card:hover,
+.story-card:has(.story-card__link:focus-visible) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--elev-2);
+  background: var(--card-bg-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-card {
+    transition: background 200ms ease, box-shadow 180ms ease;
+  }
+  .story-card:hover,
+  .story-card:has(.story-card__link:focus-visible) {
+    transform: none;
+  }
+}
+
+.story-card:hover { cursor: pointer; }
+
+/* Left content */
+.story-card__content {
+  padding: var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.story-card__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #eff8fc;
+}
+
+.story-card__teaser {
+  margin: 0;
+  color: var(--card-text);
+  opacity: 0.95;
+}
+
+.story-card__meta {
+  margin-top: auto;
+  font-size: 0.9rem;
+  color: var(--card-subtle);
+}
+
+/* Right media with diagonal mask */
+.story-card__media {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Diagonal cut – reveal only the right polygon area */
+.story-card__media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  clip-path: polygon(
+    14% 0%,
+    100% 0%,
+    100% 100%,
+    0% 100%
+  );
+  background: transparent;
+  pointer-events: none;
+}
+
+.story-card__img,
+.story-card__placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Slight darkening to help the diagonal read on dark art */
+.story-card__img {
+  filter: saturate(0.95) brightness(0.9);
+}
+
+.story-card__placeholder {
+  background: linear-gradient(145deg, #0e2a38 0%, #0b2230 60%, #081a27 100%);
+}
+
+/* Compact variant */
+.story-card.story-card--compact {
+  --card-height: 140px;
+  --card-padding: 12px;
+  --media-width: 42%;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 640px) {
+  .story-card {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .story-card__media {
+    height: 160px;
+  }
+  .story-card__media::before {
+    clip-path: none; /* remove diagonal on narrow screens */
+  }
+}

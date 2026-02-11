@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
+main {
+  max-width: 960px;               /* common: 720, 960, 1200, 1440 */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;             /* gutter on small screens */
+  padding-right: 16px;
+}

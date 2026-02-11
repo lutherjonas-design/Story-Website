@@ -1,8 +1,8 @@
-from ..models import Chapters, Paragraphs, UniqueWordsInParagraphs
+from ..models import Chapter, Paragraph, UniqueWordsInParagraph
 
 # Creates a chapter with the next number and its paragraphs atomically.
 # Assumes story and paragraph_list are already validated.
-def create_chapter_atomic(*, story, title, paragraph_list, words_to_add, chapter_word_set) -> Chapters:
+def create_chapter_atomic(*, story, title, paragraph_list, words_to_add, chapter_word_set) -> Chapter:
     from django.db import transaction
     from django.db.models import Max
     from .chapter_add import title_words_statistics
@@ -10,21 +10,21 @@ def create_chapter_atomic(*, story, title, paragraph_list, words_to_add, chapter
 
     with transaction.atomic():
         last_num = (
-            Chapters.objects.select_for_update()
+            Chapter.objects.select_for_update()
             .filter(story=story)
             .aggregate(m=Max("chapter_order"))["m"]
         )
         next_number = (last_num or 0) + 1
 
-        chapter = Chapters.objects.create(
+        chapter = Chapter.objects.create(
             title=title,
             story=story,
             chapter_order=next_number,
             dictionary_completed=False,
         )
 
-        Paragraphs.objects.bulk_create(
-            Paragraphs(
+        Paragraph.objects.bulk_create(
+            Paragraph(
                 chapter=chapter,
                 number=i+1,
                 content=block,
@@ -33,7 +33,7 @@ def create_chapter_atomic(*, story, title, paragraph_list, words_to_add, chapter
         )
 
         para_objs = list(
-            Paragraphs.objects.filter(chapter=chapter).order_by('number')
+            Paragraph.objects.filter(chapter=chapter).order_by('number')
         )
         # Sanity alignment: chapter_word_set must match paragraph_list length
         if len(para_objs) != len(chapter_word_set):
@@ -43,10 +43,10 @@ def create_chapter_atomic(*, story, title, paragraph_list, words_to_add, chapter
         for p_obj, uw_set in zip(para_objs, chapter_word_set):
             for w in uw_set:
                 # Lowercased already by tokenizer; UniqueConstraint(Lower('word'), paragraph) enforces uniqueness
-                uip_bulk.append(UniqueWordsInParagraphs(
+                uip_bulk.append(UniqueWordsInParagraph(
                     paragraph=p_obj, word=w))
 
-        UniqueWordsInParagraphs.objects.bulk_create(
+        UniqueWordsInParagraph.objects.bulk_create(
             uip_bulk, ignore_conflicts=True)
         
         for words in title_words_statistics(title=title):

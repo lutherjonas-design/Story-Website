@@ -9,16 +9,18 @@ from django.db.models.functions import Lower
 #                                                               #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-class Stories(models.Model):
+class Story(models.Model):
     title = models.CharField(max_length=200)
-    description = models.TextField()
+    teaser = models.TextField()
+    author = models.CharField(max_length=100)
+    last_updated = models.DateTimeField()
     def __str__(self):
         return self.title
 
 
-class Chapters(models.Model):
+class Chapter(models.Model):
     title = models.CharField(max_length=200)
-    story = models.ForeignKey(Stories, on_delete=models.CASCADE)
+    story = models.ForeignKey(Story, on_delete=models.CASCADE)
     order = models.PositiveIntegerField()
     dictionary_completed = models.BooleanField(default=False)
     
@@ -36,8 +38,8 @@ class Chapters(models.Model):
         return str(self.order) + ": " + self.title
 
 
-class Paragraphs(models.Model):
-    chapter = models.ForeignKey(Chapters, on_delete=models.CASCADE)
+class Paragraph(models.Model):
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
     number = models.PositiveIntegerField()
     content = models.TextField()
     dictionary_completed = models.BooleanField(default=False)
@@ -54,8 +56,8 @@ class Paragraphs(models.Model):
     def __str__(self):
         return str(self.number) + " - " + self.chapter.title
 
-class UniqueWordsInParagraphs(models.Model):
-    paragraph = models.ForeignKey(Paragraphs, on_delete=models.CASCADE, related_name='unique_words')
+class UniqueWordsInParagraph(models.Model):
+    paragraph = models.ForeignKey(Paragraph, on_delete=models.CASCADE, related_name='unique_words')
     word = models.TextField(max_length=100)
 
     class Meta: 

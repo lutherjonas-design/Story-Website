@@ -1,5 +1,5 @@
 from rest_framework import serializers #type: ignore
-from .models import Stories, Chapters
+from .models import Story, Chapter
 
 from .helper.reformatting_text import(
     split_paragraphs as service_split_paragraphs,
@@ -10,13 +10,13 @@ from .helper.database import create_chapter_atomic as service_create_chapter_ato
 
 class StorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Stories
-        fields = ["id", "title", "description"]
+        model = Story
+        fields = ["id", "title", "teaser","author","last_updated"]
 
 
 class ChapterListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Chapters
+        model = Chapter
         fields = ["id", "title", "order", "dictionary_completed"]
 
 
@@ -59,8 +59,8 @@ class ChapterAddSerializer(serializers.Serializer):
         content = validated_data["content"]
         
         try: # Validate story existence
-            story = Stories.objects.get(id=story_id)
-        except Stories.DoesNotExist:
+            story = Story.objects.get(id=story_id)
+        except Story.DoesNotExist:
             raise serializers.ValidationError("Story does not exist")
 
         paragraph_list = service_split_paragraphs(content)

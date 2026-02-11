@@ -28,7 +28,13 @@ SECRET_KEY = getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'backend',          # docker service name (requests from frontend->backend inside the network)
+    'frontend',         # optional (if anything calls from that host)
+    'localhost',        # when you hit via http://localhost:<frontend_port>
+    '127.0.0.1',
+
+]
 
 
 # Application definition

@@ -8,7 +8,7 @@ export default defineConfig({
     port: Number(process.env.VITE_PORT || 5173),
     proxy: {
       '/api': {
-        target: `http://backend:${process.env.DJANGO_INTERNAL_PORT || 8000}`,
+        target: process.env.BACKEND_INTERNAL_URL,
         changeOrigin: true,
       },
     },
