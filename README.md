@@ -3,7 +3,7 @@
 ⚠️ **Project Status: Monorepo Prototype (Academic Thesis & Data Evaluation)**  
 This repository bundles the full-stack ecosystem as a work in prgoress and a data processing pipeline. It is structured as a Monorepo to showcase the connection.
 
-## 🛠️ Tech Stack
+🛠️ **Tech Stack**
 * **Backend:** Python (FastAPI / Django)
 * **Frontend:** React
 * **Data Processing:** Pandas / NumPy
