@@ -1,6 +1,5 @@
-
 import { useEffect, useMemo, useState } from 'react'
-import type { Story } from '../components/StoryCard'
+import type { Story } from '../types/story'
 
 type StoriesResponse =
   | Story[]
@@ -8,7 +7,7 @@ type StoriesResponse =
   | { data: Story[] }
   | any // fallback if the shape varies
 
-export function useStories(limit = 2) {
+export function useStories(limit?: number) {
   const [data, setData] = useState<Story[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -37,8 +36,13 @@ export function useStories(limit = 2) {
           // last resort: try to coerce
           stories = []
         }
+        setData(
+          stories.sort((a, b) =>
+            new Date(b.last_updated ?? 0).getTime() -
+            new Date(a.last_updated ?? 0).getTime()
+          )
+        );
 
-        setData(stories)
       } catch (e: any) {
         if (e.name !== 'AbortError') {
           setError(e)
@@ -54,6 +58,7 @@ export function useStories(limit = 2) {
 
   const limited = useMemo(() => {
     if (!data) return null
+    if (limit === undefined) return data
     return data.slice(0, limit)
   }, [data, limit])
 

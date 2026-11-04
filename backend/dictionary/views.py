@@ -56,7 +56,7 @@ class WordsToAddView(ListAPIView):
 
         prefix = params.get("prefix")
         if prefix:
-            qs.filter(word__istartswith=prefix)
+            qs=qs.filter(word__istartswith=prefix)
 
         limit = params.get("limit")
         if limit and limit.isdigit():

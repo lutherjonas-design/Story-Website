@@ -1,0 +1,4 @@
+.story__list__items {
+    display: grid;
+    row-gap: .5rem;
+}

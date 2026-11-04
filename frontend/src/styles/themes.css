@@ -1,0 +1,48 @@
+:root {
+  --color-bg: #292929;          /* Page background */
+  --color-surface: #0f2d3a;     /* Card background or panels */
+  --color-text: #faf3b7;        /* alternative text */
+  --color-muted: #b8b385;       /* Secondary text */
+  --color-hower: white;
+  --color-shadow: rgba(255,255,255,0.1)
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #ffffff;
+  --color-surface: #f0d2c5;
+  --color-text: #000000;
+  --color-muted: #3f3f3f;
+  --color-hower: #000000;
+  --color-shadow: rgba(0,0,0,0.15)
+}
+
+body {
+  background-color: color-mix(in srgb, var(--color-bg) 97%, var(--color-hower));
+  color: var(--color-text);
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  background-color: var(--color-bg);
+  padding: 6px 16px 16px;
+  max-width: 1200px;               /* common: 720, 960, 1200, 1440 */
+  margin-left: auto;
+  margin-right: auto;
+  
+  box-shadow:
+    /* 0 1px 2px rgba(0,0,0,0.05); */
+    0 8px 24px var(--color-shadow);
+  border-radius: 7px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+* {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    fill 0.3s ease,
+    stroke 0.3s ease;
+}

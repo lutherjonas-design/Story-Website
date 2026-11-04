@@ -1,0 +1,36 @@
+.SyllableInput{
+  display: "flex";
+  gap: 8;
+  padding: 2px;
+  flex-wrap: "wrap";
+}
+
+.SyllableInput-valid{
+  background-color: green;
+}
+
+.SyllableInput-invalid{
+  border: 1px solid red;
+}
+
+.SyllableInput-not_found{
+  border: 1px solid orange;
+}
+
+.SyllableInputField {
+  padding: 4px 6px;
+  font-size: 14px;
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
+  border-radius: 6px;
+  outline: none;
+  width: auto;
+  min-width: 2ch;
+  background: var(--color-bg);
+  line-height: 1.2;
+}
+
+.SyllableInputField:focus {
+  border-color: var(--color-hower);
+  box-shadow: 0 0 0 3px var(--color-shadow);
+}

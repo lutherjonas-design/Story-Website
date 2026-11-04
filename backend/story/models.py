@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.functions import Lower
+from django.utils.text import slugify
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #                                                               #
@@ -11,9 +12,32 @@ from django.db.models.functions import Lower
 
 class Story(models.Model):
     title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=255, null=False)
     teaser = models.TextField()
     author = models.CharField(max_length=100)
     last_updated = models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(Lower('slug'), name='ix_story_slug_lower')
+        ]
+        constraints = [
+            models.UniqueConstraint(Lower('slug'), name='uq_story_slug_lower')
+        ]
+
+    def save(self, *args, **kwargs):
+        # Auto-generate slug on create if missing
+        if not self.slug and self.title:
+            base = slugify(self.title) or "story"
+            candidate = base
+            i = 2
+            # ensure uniqueness
+            while Story.objects.filter(slug=candidate).exists():
+                candidate = f"{base}-{i}"
+                i += 1
+            self.slug = candidate
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
 
@@ -32,7 +56,6 @@ class Chapter(models.Model):
         indexes = [
             models.Index(fields=['story', 'order']),
         ]
-
 
     def __str__(self):
         return str(self.order) + ": " + self.title

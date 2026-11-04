@@ -1,0 +1,35 @@
+.chaptercard {
+  display: flex;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: 2px;
+  overflow: hidden;
+  border: 0px solid var(#ffffff00);
+  box-shadow: var(--shadow-1);
+  transition: 0.2s ease;
+}
+
+.chaptercard:hover {
+  transform: scale(1.02);
+}
+
+/* LEFT SIDE */
+.chaptercard__content {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.chaptercard__title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.chaptercard__link{
+  text-decoration: none;
+  color: inherit;
+}

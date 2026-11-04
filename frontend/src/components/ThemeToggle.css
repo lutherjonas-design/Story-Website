@@ -1,0 +1,20 @@
+/* Put in ThemeToggle.css or Navbar.css */
+.theme-toggle {
+  width: 36px;                  /* fixed width */
+  height: 32px;                 /* fixed height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;      /* center icon */
+  padding: 0;                   /* fixed box, no growth */
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-muted);
+  border-radius: 8px;
+  cursor: pointer;
+  line-height: 1;               /* stop emoji from stretching vertically */
+  font-size: 16px;              /* consistent emoji size */
+}
+
+.theme-toggle:hover {
+  background: color-mix(in srgb, var(--color-surface) 85%, var(--color-muted));
+}

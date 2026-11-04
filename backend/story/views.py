@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, CreateAPIView #type: ignore
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView #type: ignore
 from rest_framework.views import APIView #type: ignore
 from rest_framework.response import Response #type: ignore
 from django.shortcuts import get_object_or_404
@@ -15,6 +15,26 @@ class StoriesListView(ListAPIView):
     queryset = Story.objects.all().order_by("id")
     serializer_class = StorySerializer
 
+
+class StoryViewByID(APIView):
+    serializer_class = StorySerializer
+    pagination_class = None
+    
+    def get(self, request, story_id):
+        story = get_object_or_404(Story, id=story_id)
+        serializer = self.serializer_class(story)
+        return Response(serializer.data)
+
+
+class StoryViewBySlug(APIView):
+    serializer_class = StorySerializer
+    pagination_class = None
+    
+    def get(self, request, slug):
+        story = get_object_or_404(Story, slug=slug)
+        serializer = self.serializer_class(story)
+        return Response(serializer.data)
+    
 
 class ChaptersListView(ListAPIView):
     serializer_class = ChapterListSerializer

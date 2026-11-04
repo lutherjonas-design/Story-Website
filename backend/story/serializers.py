@@ -11,7 +11,7 @@ from .helper.database import create_chapter_atomic as service_create_chapter_ato
 class StorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Story
-        fields = ["id", "title", "teaser","author","last_updated"]
+        fields = ["id", "title", "teaser","slug","author","last_updated"]
 
 
 class ChapterListSerializer(serializers.ModelSerializer):
